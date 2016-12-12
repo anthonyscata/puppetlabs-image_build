@@ -56,7 +56,7 @@ RUN rm /usr/lib/ruby/gems/2.3.0/gems/facter-"$FACTER_VERSION"/lib/facter/blockde
 <% if use_puppetfile && !master %>
 <% if os == 'ubuntu' or os == 'debian' %>
 RUN <% if apt_proxy %>echo "Acquire::HTTP::Proxy \"$APT_PROXY\";" >> /etc/apt/apt.conf.d/01proxy && echo 'Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && <% end %>apt-get update && \
-    apt-get install --no-install-recommends -y git-core && \
+    apt-get install --no-install-recommends -y git ca-certificates && \
     <%= gem_path %> install r10k:"$R10K_VERSION" --no-ri --no-rdoc && \
     apt-get remove --purge -y git-core && \
     apt-get autoremove -y && \
