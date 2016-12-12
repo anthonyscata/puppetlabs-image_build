@@ -75,6 +75,11 @@ module PuppetX
         default_to { false }
       end
 
+      option '--module_dir STRING' do
+        summary 'Allow the use of local modules during build'
+        default_to { false }
+      end
+
       option '--image-name STRING' do
         summary 'The name of the resulting image'
       end

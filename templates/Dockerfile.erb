@@ -78,7 +78,12 @@ RUN <%= r10k_path %> puppetfile install --moduledir /etc/puppetlabs/code/modules
 <% end %>
 
 <% if manifest && !master %>
-COPY <%= File.dirname(manifest) %> /<%= File.dirname(manifest) %>
+COPY <%= manifest %> /<%= File.dirname(manifest) %>
+<% end %>
+
+<% if use_module_dir && !master %>
+  COPY <%= module_dir %> /modules
+  <% modulepath="--modulepath /modules:/etc/puppetlabs/code/modules" %>
 <% end %>
 
 <% if use_hiera && !master %>
@@ -108,17 +113,17 @@ RUN apk update && \
   <% else %>
     <% if os == 'ubuntu' or os == 'debian' %>
 RUN <% if apt_proxy %>echo "Acquire::HTTP::Proxy \"$APT_PROXY\";" >> /etc/apt/apt.conf.d/01proxy && echo 'Acquire::HTTPS::Proxy "false";' >> /etc/apt/apt.conf.d/01proxy && <% end %>apt-get update && \
-    FACTER_hostname=<%= hostname %> <%= puppet_path %> apply <%= manifest %> --verbose --show_diff --summarize <% if use_hiera %>--hiera_config=/hiera.yaml<% end %> --app_management && \
+    FACTER_hostname=<%= hostname %> <%= puppet_path %> apply <%= manifest %> <%= modulepath %> --verbose --show_diff --summarize <% if use_hiera %>--hiera_config=/hiera.yaml<% end %> --app_management && \
     apt-get autoremove -y && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* <% if apt_proxy %>&& rm -f /etc/apt/apt.conf.d/01proxy<% end %>
     <% elsif os == 'centos' %>
 RUN yum update -y && \
-    FACTER_hostname=<%= hostname %> <%= puppet_path %> apply <%= manifest %> --verbose --show_diff --summarize <% if use_hiera %>--hiera_config=/hiera.yaml<% end %> --app_management && \
+    FACTER_hostname=<%= hostname %> <%= puppet_path %> apply <%= manifest %> <%= modulepath %> --verbose --show_diff --summarize <% if use_hiera %>--hiera_config=/hiera.yaml<% end %> --app_management && \
     yum clean all
     <% elsif os == 'alpine' %>
 RUN apk update && \
-    FACTER_hostname=<%= hostname %> <%= puppet_path %> apply <%= manifest %> --verbose --show_diff --summarize <% if use_hiera %>--hiera_config=/hiera.yaml<% end %> --app_management && \
+    FACTER_hostname=<%= hostname %> <%= puppet_path %> apply <%= manifest %> <%= modulepath %> --verbose --show_diff --summarize <% if use_hiera %>--hiera_config=/hiera.yaml<% end %> --app_management && \
     rm -rf /var/cache/apk/*
     <% end %>
   <% end %>

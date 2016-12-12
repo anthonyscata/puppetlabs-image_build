@@ -32,6 +32,7 @@ module PuppetX
         determine_paths
         determine_if_using_puppetfile
         determine_if_using_factfile
+        determine_if_using_module_dir
         determine_if_using_hiera
         determine_environment_vars
         determine_hostname
@@ -161,6 +162,14 @@ module PuppetX
       def determine_if_using_puppetfile
         if exists_and_is_file(:puppetfile)
           @context[:use_puppetfile] = true
+        end
+      end
+
+      def determine_if_using_module_dir
+        if exists_and_is_directory(:module_dir)
+          @context[:use_module_dir] = true
+        else
+          raise InvalidContextError, 'The directory supplied for the module directory does not exist'
         end
       end
 
