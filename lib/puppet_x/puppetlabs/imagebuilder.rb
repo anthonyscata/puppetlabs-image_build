@@ -224,6 +224,7 @@ module PuppetX
                      when 'wheezy', /^7/
                        'wheezy'
                      end
+        when 'centos'
         when 'alpine'
           facter_version = '2.4.6' # latest version available as a gem
           puppet_version = case @context[:puppet_agent_version]
